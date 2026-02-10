@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rae Holt — Designer & Artist</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Cursor paint trail canvas -->
+    <canvas id="paint-cursor-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="main-nav" id="mainNav">
+        <div class="nav-inner">
+            <a href="#hero" class="nav-logo">RH</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#bio">Bio</a></li>
+                <li><a href="#commercial">Commercial</a></li>
+                <li><a href="#marketing">Marketing</a></li>
+                <li><a href="#social">Social Media</a></li>
+                <li><a href="#albums">Album Art</a></li>
+                <li><a href="#painting">Painting</a></li>
+                <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Interactive Paint Stroke Name -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-name-wrapper" id="heroName">
+                <svg class="paint-name" viewBox="0 0 900 280" preserveAspectRatio="xMidYMid meet">
+                    <!-- Paint stroke backgrounds for each letter -->
+                    <defs>
+                        <filter id="paint-texture">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" result="noise"/>
+                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+                        </filter>
+                        <filter id="rough-edge">
+                            <feTurbulence type="turbulence" baseFrequency="0.05" numOctaves="2" result="noise"/>
+                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4"/>
+                        </filter>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="4" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- Brush stroke paths behind text -->
+                    <g class="brush-strokes">
+                        <path class="stroke stroke-1" d="M 30 100 Q 80 60, 180 80 Q 260 95, 340 75 Q 400 60, 440 85" fill="none" stroke="#E8453C" stroke-width="55" stroke-linecap="round" opacity="0.7" filter="url(#rough-edge)"/>
+                        <path class="stroke stroke-2" d="M 460 90 Q 520 65, 580 85 Q 640 100, 700 70 Q 760 50, 850 80" fill="none" stroke="#2D2D2D" stroke-width="55" stroke-linecap="round" opacity="0.7" filter="url(#rough-edge)"/>
+                        <path class="stroke stroke-accent" d="M 100 180 Q 200 200, 350 175 Q 500 155, 650 180 Q 750 195, 820 170" fill="none" stroke="#D4A574" stroke-width="8" stroke-linecap="round" opacity="0.5" filter="url(#rough-edge)"/>
+                    </g>
+
+                    <!-- Splatter dots -->
+                    <g class="splatters">
+                        <circle class="splatter" cx="50" cy="65" r="4" fill="#E8453C" opacity="0.6"/>
+                        <circle class="splatter" cx="420" cy="55" r="3" fill="#E8453C" opacity="0.4"/>
+                        <circle class="splatter" cx="870" cy="60" r="5" fill="#2D2D2D" opacity="0.5"/>
+                        <circle class="splatter" cx="250" cy="110" r="3" fill="#D4A574" opacity="0.6"/>
+                        <circle class="splatter" cx="680" cy="105" r="4" fill="#D4A574" opacity="0.5"/>
+                        <circle class="splatter" cx="150" cy="50" r="2" fill="#E8453C" opacity="0.3"/>
+                        <circle class="splatter" cx="550" cy="45" r="3" fill="#2D2D2D" opacity="0.3"/>
+                    </g>
+
+                    <!-- Main text -->
+                    <text class="name-text name-first" x="230" y="110" text-anchor="middle" filter="url(#paint-texture)">RAE</text>
+                    <text class="name-text name-last" x="660" y="110" text-anchor="middle" filter="url(#paint-texture)">HOLT</text>
+                </svg>
+
+                <!-- Drip elements -->
+                <div class="paint-drips">
+                    <div class="drip drip-1"></div>
+                    <div class="drip drip-2"></div>
+                    <div class="drip drip-3"></div>
+                </div>
+            </div>
+
+            <p class="hero-subtitle">
+                <span class="subtitle-line">Designer</span>
+                <span class="subtitle-divider">&</span>
+                <span class="subtitle-line">Artist</span>
+            </p>
+            <div class="hero-scroll-indicator">
+                <span>Scroll to explore</span>
+                <div class="scroll-arrow"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bio Section -->
+    <section class="section bio-section" id="bio">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-brush"></span>
+                    About
+                </h2>
+            </div>
+            <div class="bio-grid">
+                <div class="bio-image-wrapper">
+                    <div class="bio-image-frame">
+                        <div class="bio-image-placeholder">
+                            <span>Photo</span>
+                        </div>
+                    </div>
+                    <div class="bio-paint-accent"></div>
+                </div>
+                <div class="bio-content">
+                    <h3 class="bio-headline">Creating at the intersection of design & fine art.</h3>
+                    <p class="bio-text">
+                        Rae Holt is a multidisciplinary designer and artist whose work bridges the gap between commercial design and fine art. With a keen eye for color, composition, and storytelling, Rae brings a painterly sensibility to every project — whether it's a brand campaign, album cover, or canvas painting.
+                    </p>
+                    <p class="bio-text">
+                        With experience spanning marketing design, social media content creation, album artwork, and commercial branding, Rae's versatile practice is rooted in a deep love for visual expression. Each piece is crafted with intention, balancing aesthetic beauty with strategic purpose.
+                    </p>
+                    <p class="bio-text">
+                        When not designing for clients, Rae can be found in the studio, exploring color and texture through painting — a practice that continually informs and enriches the commercial work.
+                    </p>
+                    <div class="bio-stats">
+                        <div class="stat">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Projects Completed</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">30+</span>
+                            <span class="stat-label">Happy Clients</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">5+</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commercial Work Section -->
+    <section class="section work-section" id="commercial">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-brush"></span>
+                    Commercial Work
+                </h2>
+                <p class="section-subtitle">Brand identities, packaging, and visual systems that make an impact.</p>
+            </div>
+            <div class="gallery-grid gallery-masonry">
+                <div class="gallery-item large" data-category="commercial">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #E8453C 0%, #D4A574 100%); aspect-ratio: 16/10;">
+                            <span>Brand Identity Project</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Brand Identity</h4>
+                            <p>Complete visual identity system</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="commercial">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #2D2D2D 0%, #555 100%); aspect-ratio: 1/1;">
+                            <span>Packaging Design</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Packaging Design</h4>
+                            <p>Product packaging & labels</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="commercial">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #D4A574 0%, #F5E6D3 100%); aspect-ratio: 1/1;">
+                            <span>Logo Design</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Logo Design</h4>
+                            <p>Logomarks & wordmarks</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item wide" data-category="commercial">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #1a1a2e 0%, #E8453C 100%); aspect-ratio: 21/9;">
+                            <span>Print Campaign</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Print Campaign</h4>
+                            <p>Multi-format print advertising</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketing Design Section -->
+    <section class="section work-section alt-bg" id="marketing">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-brush"></span>
+                    Marketing Design
+                </h2>
+                <p class="section-subtitle">Strategic visual content that drives engagement and converts.</p>
+            </div>
+            <div class="gallery-grid gallery-masonry">
+                <div class="gallery-item" data-category="marketing">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); aspect-ratio: 1/1;">
+                            <span>Email Campaign</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Email Campaign</h4>
+                            <p>Newsletter & email design</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item large" data-category="marketing">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); aspect-ratio: 16/10;">
+                            <span>Ad Campaign</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Ad Campaign</h4>
+                            <p>Digital advertising suite</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="marketing">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); aspect-ratio: 3/4;">
+                            <span>Brochure Design</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Brochure</h4>
+                            <p>Print & digital brochures</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="marketing">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); aspect-ratio: 4/3;">
+                            <span>Landing Page</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Landing Pages</h4>
+                            <p>High-converting web design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Media Section -->
+    <section class="section work-section" id="social">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-brush"></span>
+                    Social Media
+                </h2>
+                <p class="section-subtitle">Scroll-stopping content designed for the digital age.</p>
+            </div>
+            <div class="gallery-grid social-grid">
+                <div class="gallery-item" data-category="social">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #E8453C 0%, #ff6b6b 100%); aspect-ratio: 1/1;">
+                            <span>Instagram Post</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Instagram Content</h4>
+                            <p>Feed posts & carousels</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="social">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); aspect-ratio: 9/16;">
+                            <span>Story Design</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Stories & Reels</h4>
+                            <p>Vertical format content</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="social">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); aspect-ratio: 1/1;">
+                            <span>Brand Templates</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Brand Templates</h4>
+                            <p>Reusable social templates</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="social">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); aspect-ratio: 1/1;">
+                            <span>Campaign Graphics</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Campaign Graphics</h4>
+                            <p>Social campaign visuals</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="social">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #2D2D2D 0%, #E8453C 100%); aspect-ratio: 16/9;">
+                            <span>Twitter/X Banner</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Platform Banners</h4>
+                            <p>Headers & cover images</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="social">
+                    <div class="gallery-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #D4A574 0%, #F5E6D3 100%); aspect-ratio: 1/1;">
+                            <span>Highlight Covers</span>
+                        </div>
+                        <div class="gallery-overlay">
+                            <h4>Highlight Covers</h4>
+                            <p>Icon & highlight design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Album Art Section -->
+    <section class="section work-section alt-bg" id="albums">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-brush"></span>
+                    Album Art
+                </h2>
+                <p class="section-subtitle">Visual stories that bring music to life.</p>
+            </div>
+            <div class="gallery-grid album-grid">
+                <div class="gallery-item" data-category="album">
+                    <div class="gallery-card vinyl-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #0c0c0c 0%, #E8453C 50%, #0c0c0c 100%); aspect-ratio: 1/1;">
+                            <span>Album Cover I</span>
+                        </div>
+                        <div class="vinyl-ring"></div>
+                        <div class="gallery-overlay">
+                            <h4>Album Cover</h4>
+                            <p>Cover art & vinyl design</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="album">
+                    <div class="gallery-card vinyl-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #1a1a2e 0%, #D4A574 50%, #1a1a2e 100%); aspect-ratio: 1/1;">
+                            <span>Album Cover II</span>
+                        </div>
+                        <div class="vinyl-ring"></div>
+                        <div class="gallery-overlay">
+                            <h4>EP Artwork</h4>
+                            <p>Extended play cover art</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="album">
+                    <div class="gallery-card vinyl-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #2D2D2D 0%, #667eea 50%, #2D2D2D 100%); aspect-ratio: 1/1;">
+                            <span>Album Cover III</span>
+                        </div>
+                        <div class="vinyl-ring"></div>
+                        <div class="gallery-overlay">
+                            <h4>Single Artwork</h4>
+                            <p>Single release cover</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="album">
+                    <div class="gallery-card vinyl-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #0c0c0c 0%, #f093fb 50%, #0c0c0c 100%); aspect-ratio: 1/1;">
+                            <span>Album Cover IV</span>
+                        </div>
+                        <div class="vinyl-ring"></div>
+                        <div class="gallery-overlay">
+                            <h4>Deluxe Edition</h4>
+                            <p>Deluxe packaging design</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Painting Section -->
+    <section class="section work-section painting-section" id="painting">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="title-brush"></span>
+                    Painting
+                </h2>
+                <p class="section-subtitle">Original works exploring color, texture, and emotion.</p>
+            </div>
+            <div class="gallery-grid painting-grid">
+                <div class="gallery-item tall" data-category="painting">
+                    <div class="gallery-card painting-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(180deg, #E8453C 0%, #D4A574 40%, #F5E6D3 100%); aspect-ratio: 3/4;">
+                            <span>Painting I</span>
+                        </div>
+                        <div class="painting-frame"></div>
+                        <div class="gallery-overlay">
+                            <h4>Untitled I</h4>
+                            <p>Acrylic on canvas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="painting">
+                    <div class="gallery-card painting-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(180deg, #1a1a2e 0%, #E8453C 100%); aspect-ratio: 1/1;">
+                            <span>Painting II</span>
+                        </div>
+                        <div class="painting-frame"></div>
+                        <div class="gallery-overlay">
+                            <h4>Untitled II</h4>
+                            <p>Oil on canvas</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="painting">
+                    <div class="gallery-card painting-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(135deg, #D4A574 0%, #2D2D2D 100%); aspect-ratio: 4/3;">
+                            <span>Painting III</span>
+                        </div>
+                        <div class="painting-frame"></div>
+                        <div class="gallery-overlay">
+                            <h4>Untitled III</h4>
+                            <p>Mixed media</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item tall" data-category="painting">
+                    <div class="gallery-card painting-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(180deg, #667eea 0%, #F5E6D3 100%); aspect-ratio: 2/3;">
+                            <span>Painting IV</span>
+                        </div>
+                        <div class="painting-frame"></div>
+                        <div class="gallery-overlay">
+                            <h4>Untitled IV</h4>
+                            <p>Watercolor on paper</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-item wide" data-category="painting">
+                    <div class="gallery-card painting-card">
+                        <div class="gallery-placeholder" style="background: linear-gradient(90deg, #E8453C 0%, #D4A574 30%, #667eea 70%, #2D2D2D 100%); aspect-ratio: 21/9;">
+                            <span>Painting V</span>
+                        </div>
+                        <div class="painting-frame"></div>
+                        <div class="gallery-overlay">
+                            <h4>Untitled V</h4>
+                            <p>Large scale acrylic</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="section contact-section" id="contact">
+        <div class="container">
+            <div class="contact-inner">
+                <h2 class="contact-title">Let's Create Together</h2>
+                <p class="contact-text">Have a project in mind? I'd love to hear about it.</p>
+                <div class="contact-links">
+                    <a href="mailto:hello@raeholt.com" class="contact-btn primary">
+                        <span>hello@raeholt.com</span>
+                    </a>
+                    <div class="contact-social">
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Behance">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 11c1.38 0 2.5-1.12 2.5-2.5S8.88 6 7.5 6H3v5h4.5zm0 2H3v5h4.5c1.38 0 2.5-1.12 2.5-2.5S8.88 13 7.5 13zM21 7h-6v2h6V7zm-3 4c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm2.5 5c0 1.38-1.12 2.5-2.5 2.5s-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5z"/></svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Dribbble">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Rae Holt. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
