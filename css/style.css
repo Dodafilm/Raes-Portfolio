@@ -37,7 +37,7 @@ html {
 body {
     font-family: var(--font-body);
     color: var(--text);
-    background-color: var(--off-white);
+    background-color: #1a1a1a;
     overflow-x: hidden;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -57,6 +57,17 @@ a {
     max-width: 1280px;
     margin: 0 auto;
     padding: 0 2rem;
+}
+
+/* --- Flip Disc Background Canvas --- */
+#flip-disc-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
 /* --- Paint Cursor Canvas --- */
@@ -84,11 +95,11 @@ a {
 }
 
 .main-nav.scrolled {
-    background: rgba(250, 247, 244, 0.92);
+    background: rgba(26, 26, 26, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 0.75rem 0;
-    box-shadow: 0 1px 20px rgba(0,0,0,0.06);
+    box-shadow: 0 1px 20px rgba(0,0,0,0.2);
 }
 
 .nav-inner {
@@ -104,7 +115,7 @@ a {
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--charcoal);
+    color: var(--off-white);
     letter-spacing: -0.02em;
     position: relative;
 }
@@ -137,14 +148,14 @@ a {
 .nav-links a {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.6);
     transition: color 0.3s ease;
     position: relative;
     letter-spacing: 0.02em;
 }
 
 .nav-links a:hover {
-    color: var(--charcoal);
+    color: #fff;
 }
 
 .nav-links a::after {
@@ -194,7 +205,7 @@ a {
 .nav-toggle span {
     width: 24px;
     height: 2px;
-    background: var(--charcoal);
+    background: var(--off-white);
     border-radius: 2px;
     transition: all 0.3s ease;
 }
@@ -209,7 +220,7 @@ a {
     justify-content: center;
     position: relative;
     overflow: hidden;
-    background: var(--off-white);
+    background: transparent;
 }
 
 .hero-bg-shapes {
@@ -230,6 +241,7 @@ a {
     background: var(--red);
     top: -200px;
     right: -100px;
+    opacity: 0.05;
     animation: float-slow 20s ease-in-out infinite;
 }
 
@@ -239,6 +251,7 @@ a {
     background: var(--warm-tan);
     bottom: -100px;
     left: -100px;
+    opacity: 0.05;
     animation: float-slow 15s ease-in-out infinite reverse;
 }
 
@@ -249,6 +262,7 @@ a {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    opacity: 0.03;
     animation: float-slow 25s ease-in-out infinite;
 }
 
@@ -287,7 +301,7 @@ a {
     fill: var(--off-white);
     letter-spacing: 0.05em;
     paint-order: stroke;
-    stroke: var(--charcoal);
+    stroke: rgba(255,255,255,0.2);
     stroke-width: 1px;
     transition: fill 0.5s ease;
 }
@@ -411,7 +425,7 @@ a {
     font-family: var(--font-body);
     font-size: 1.125rem;
     font-weight: 300;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.5);
     letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0;
@@ -445,13 +459,13 @@ a {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.35);
 }
 
 .scroll-arrow {
     width: 1px;
     height: 40px;
-    background: var(--text-light);
+    background: rgba(255,255,255,0.3);
     position: relative;
     animation: scroll-bob 2s ease-in-out infinite;
 }
@@ -463,8 +477,8 @@ a {
     left: -4px;
     width: 9px;
     height: 9px;
-    border-bottom: 1px solid var(--text-light);
-    border-right: 1px solid var(--text-light);
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    border-right: 1px solid rgba(255,255,255,0.3);
     transform: rotate(45deg);
 }
 
@@ -484,10 +498,13 @@ a {
 .section {
     padding: 7rem 0;
     position: relative;
+    background: rgba(26, 26, 26, 0.65);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
 }
 
 .alt-bg {
-    background: #f0ebe5;
+    background: rgba(20, 20, 20, 0.75);
 }
 
 .section-header {
@@ -499,7 +516,7 @@ a {
     font-family: var(--font-display);
     font-size: 3rem;
     font-weight: 700;
-    color: var(--charcoal);
+    color: var(--off-white);
     position: relative;
     display: inline-block;
     letter-spacing: -0.02em;
@@ -520,7 +537,7 @@ a {
 
 .section-subtitle {
     font-size: 1.1rem;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.5);
     margin-top: 1rem;
     font-weight: 300;
     max-width: 500px;
@@ -557,7 +574,7 @@ a {
     font-family: var(--font-handwritten);
     font-size: 1.5rem;
     color: var(--charcoal);
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 .bio-paint-accent {
@@ -580,7 +597,7 @@ a {
     font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 700;
-    color: var(--charcoal);
+    color: var(--off-white);
     margin-bottom: 1.5rem;
     line-height: 1.3;
     letter-spacing: -0.02em;
@@ -589,7 +606,7 @@ a {
 .bio-text {
     font-size: 1rem;
     line-height: 1.8;
-    color: var(--text);
+    color: rgba(255,255,255,0.7);
     margin-bottom: 1.25rem;
 }
 
@@ -598,7 +615,7 @@ a {
     gap: 3rem;
     margin-top: 2.5rem;
     padding-top: 2rem;
-    border-top: 1px solid rgba(0,0,0,0.08);
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .stat-number {
@@ -612,7 +629,7 @@ a {
 .stat-label {
     display: block;
     font-size: 0.8rem;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.4);
     margin-top: 0.25rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -663,7 +680,7 @@ a {
 
 .gallery-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 
 .gallery-placeholder {
@@ -768,7 +785,7 @@ a {
 
 .painting-card {
     border-radius: 2px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
 .painting-frame {
@@ -785,15 +802,7 @@ a {
 
 /* Painting section special background */
 .painting-section {
-    background: var(--dark);
-}
-
-.painting-section .section-title {
-    color: var(--off-white);
-}
-
-.painting-section .section-subtitle {
-    color: rgba(255,255,255,0.5);
+    background: rgba(10, 10, 10, 0.8);
 }
 
 .painting-section .title-brush {
@@ -806,7 +815,7 @@ a {
    ============================================ */
 .contact-section {
     padding: 8rem 0;
-    background: var(--charcoal);
+    background: rgba(20, 20, 20, 0.8);
     text-align: center;
 }
 
@@ -891,7 +900,7 @@ a {
    ============================================ */
 .footer {
     padding: 2rem 0;
-    background: var(--dark);
+    background: rgba(10, 10, 10, 0.85);
     text-align: center;
     font-size: 0.8rem;
     color: rgba(255,255,255,0.3);
@@ -949,12 +958,12 @@ a {
         width: 75%;
         max-width: 350px;
         height: 100vh;
-        background: var(--off-white);
+        background: #1a1a1a;
         flex-direction: column;
         align-items: flex-start;
         padding: 6rem 2rem 2rem;
         gap: 1.5rem;
-        box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+        box-shadow: -10px 0 40px rgba(0,0,0,0.4);
         transition: right 0.4s var(--ease-out);
     }
 
@@ -1120,7 +1129,7 @@ body.lightbox-open {
 .lightbox-content {
     max-width: 900px;
     width: 100%;
-    background: var(--off-white);
+    background: #222;
     border-radius: 12px;
     overflow: hidden;
     transform: scale(0.9) translateY(30px);
@@ -1170,7 +1179,7 @@ body.lightbox-open {
     font-family: var(--font-display);
     font-size: 2rem;
     font-weight: 700;
-    color: var(--charcoal);
+    color: var(--off-white);
     margin-bottom: 1rem;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -1179,7 +1188,7 @@ body.lightbox-open {
 .lightbox-description {
     font-size: 1rem;
     line-height: 1.8;
-    color: var(--text);
+    color: rgba(255,255,255,0.7);
     margin-bottom: 2rem;
 }
 
@@ -1187,7 +1196,7 @@ body.lightbox-open {
     display: flex;
     gap: 2.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(0,0,0,0.08);
+    border-top: 1px solid rgba(255,255,255,0.1);
     flex-wrap: wrap;
 }
 
@@ -1202,12 +1211,12 @@ body.lightbox-open {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--text-light);
+    color: rgba(255,255,255,0.4);
 }
 
 .meta-value {
     font-size: 0.95rem;
-    color: var(--charcoal);
+    color: var(--off-white);
     font-weight: 500;
 }
 
@@ -1288,7 +1297,7 @@ body.lightbox-open {
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--off-white);
+    background: #1a1a1a;
 }
 
 ::-webkit-scrollbar-thumb {

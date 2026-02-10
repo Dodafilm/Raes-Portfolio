@@ -4,6 +4,146 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // ============================================
+    // FLIP DISC BACKGROUND
+    // ============================================
+    const flipCanvas = document.getElementById('flip-disc-canvas');
+    const flipCtx = flipCanvas.getContext('2d');
+
+    const DISC_SIZE = 14;          // disc diameter
+    const DISC_GAP = 2;            // gap between discs
+    const CELL = DISC_SIZE + DISC_GAP;
+    const FLIP_RADIUS = 120;       // mouse influence radius
+    const FLIP_SPEED = 0.08;       // how fast discs flip (0-1)
+    const RETURN_SPEED = 0.03;     // how fast discs return
+
+    const FRONT_COLOR = '#1e1e1e'; // dark front (resting)
+    const BACK_COLOR = '#E8453C';  // red back (flipped)
+    const ACCENT_COLORS = ['#E8453C', '#D4A574', '#fff'];
+
+    let cols, rows, discs;
+    let flipMouseX = -9999;
+    let flipMouseY = -9999;
+
+    function initDiscs() {
+        flipCanvas.width = window.innerWidth;
+        flipCanvas.height = window.innerHeight;
+        cols = Math.ceil(flipCanvas.width / CELL) + 1;
+        rows = Math.ceil(flipCanvas.height / CELL) + 1;
+
+        discs = [];
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                discs.push({
+                    x: c * CELL + DISC_SIZE / 2,
+                    y: r * CELL + DISC_SIZE / 2,
+                    flip: 0,           // 0 = front, 1 = fully flipped
+                    targetFlip: 0,
+                    backColor: ACCENT_COLORS[Math.floor(Math.random() * ACCENT_COLORS.length)],
+                });
+            }
+        }
+    }
+    initDiscs();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(initDiscs, 150);
+    });
+
+    // Track mouse for flip discs (needs pointer events)
+    document.addEventListener('mousemove', (e) => {
+        flipMouseX = e.clientX;
+        flipMouseY = e.clientY;
+    });
+
+    document.addEventListener('mouseleave', () => {
+        flipMouseX = -9999;
+        flipMouseY = -9999;
+    });
+
+    function drawDiscs() {
+        flipCtx.clearRect(0, 0, flipCanvas.width, flipCanvas.height);
+
+        for (let i = 0; i < discs.length; i++) {
+            const d = discs[i];
+
+            // Calculate distance to mouse
+            const dx = d.x - flipMouseX;
+            const dy = d.y - flipMouseY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            // Set target flip based on distance
+            if (dist < FLIP_RADIUS) {
+                d.targetFlip = 1 - (dist / FLIP_RADIUS); // closer = more flipped
+            } else {
+                d.targetFlip = 0;
+            }
+
+            // Animate flip value
+            if (d.flip < d.targetFlip) {
+                d.flip += (d.targetFlip - d.flip) * FLIP_SPEED + 0.01;
+                if (d.flip > d.targetFlip) d.flip = d.targetFlip;
+            } else if (d.flip > d.targetFlip) {
+                d.flip -= (d.flip - d.targetFlip) * RETURN_SPEED + 0.003;
+                if (d.flip < 0) d.flip = 0;
+            }
+
+            // Draw the disc
+            // Flip effect: scale X from 1 (front) through 0 (edge) to 1 (back)
+            const flipPhase = d.flip; // 0 to 1
+            const radius = DISC_SIZE / 2;
+
+            // Determine which "side" is showing
+            // 0-0.5 = front rotating to edge, 0.5-1 = back rotating from edge
+            let scaleX;
+            let isFront;
+            if (flipPhase <= 0.5) {
+                scaleX = 1 - flipPhase * 2;  // 1 -> 0
+                isFront = true;
+            } else {
+                scaleX = (flipPhase - 0.5) * 2; // 0 -> 1
+                isFront = false;
+            }
+
+            // Min scale so disc doesn't disappear completely
+            scaleX = Math.max(scaleX, 0.05);
+
+            const color = isFront ? FRONT_COLOR : d.backColor;
+
+            flipCtx.save();
+            flipCtx.translate(d.x, d.y);
+            flipCtx.scale(scaleX, 1);
+
+            // Draw circle
+            flipCtx.beginPath();
+            flipCtx.arc(0, 0, radius, 0, Math.PI * 2);
+
+            // Add subtle shading based on flip state
+            if (!isFront && flipPhase > 0.5) {
+                const brightness = 0.7 + 0.3 * ((flipPhase - 0.5) * 2);
+                flipCtx.globalAlpha = brightness;
+            } else {
+                flipCtx.globalAlpha = 0.9;
+            }
+
+            flipCtx.fillStyle = color;
+            flipCtx.fill();
+
+            // Subtle border
+            flipCtx.strokeStyle = isFront ? '#2a2a2a' : 'rgba(255,255,255,0.15)';
+            flipCtx.lineWidth = 0.5;
+            flipCtx.stroke();
+
+            flipCtx.restore();
+        }
+
+        requestAnimationFrame(drawDiscs);
+    }
+    drawDiscs();
+
+
     // ---- Paint Cursor Trail ----
     const canvas = document.getElementById('paint-cursor-canvas');
     const ctx = canvas.getContext('2d');
@@ -262,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 navLinkElements.forEach(link => {
                     link.style.color = '';
                     if (link.getAttribute('href') === `#${id}`) {
-                        link.style.color = 'var(--charcoal)';
+                        link.style.color = '#fff';
                     }
                 });
             }
