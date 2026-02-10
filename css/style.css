@@ -1097,13 +1097,15 @@ a {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.92);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.4s ease, visibility 0.4s ease;
+    padding: 2rem;
+    overflow-y: auto;
 }
 
 .lightbox.active {
@@ -1111,40 +1113,166 @@ a {
     visibility: visible;
 }
 
-.lightbox-content {
-    max-width: 90vw;
-    max-height: 85vh;
-    border-radius: 8px;
+body.lightbox-open {
     overflow: hidden;
-    transform: scale(0.9);
-    transition: transform 0.4s var(--ease-spring);
+}
+
+.lightbox-content {
+    max-width: 900px;
+    width: 100%;
+    background: var(--off-white);
+    border-radius: 12px;
+    overflow: hidden;
+    transform: scale(0.9) translateY(30px);
+    transition: transform 0.5s var(--ease-spring), opacity 0.4s ease;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .lightbox.active .lightbox-content {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.lightbox-image {
+    width: 100%;
+    min-height: 300px;
+    max-height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-handwritten);
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.6);
+    position: relative;
+    overflow: hidden;
+}
+
+.lightbox-details {
+    padding: 2.5rem;
+}
+
+.lightbox-category {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--red);
+    background: rgba(232, 69, 60, 0.08);
+    padding: 0.35rem 0.9rem;
+    border-radius: 50px;
+    margin-bottom: 1rem;
+}
+
+.lightbox-title {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.lightbox-description {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 2rem;
+}
+
+.lightbox-meta {
+    display: flex;
+    gap: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.meta-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+}
+
+.meta-value {
+    font-size: 0.95rem;
+    color: var(--charcoal);
+    font-weight: 500;
 }
 
 .lightbox-close {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    width: 44px;
-    height: 44px;
-    background: none;
-    border: 1px solid rgba(255,255,255,0.2);
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 48px;
+    height: 48px;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
     border-radius: 50%;
     color: white;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    z-index: 2001;
+    line-height: 1;
 }
 
 .lightbox-close:hover {
+    background: var(--red);
     border-color: var(--red);
-    color: var(--red);
+    color: white;
+    transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+    .lightbox {
+        padding: 1rem;
+    }
+
+    .lightbox-content {
+        max-width: 100%;
+    }
+
+    .lightbox-image {
+        min-height: 200px;
+        max-height: 300px;
+    }
+
+    .lightbox-details {
+        padding: 1.5rem;
+    }
+
+    .lightbox-title {
+        font-size: 1.5rem;
+    }
+
+    .lightbox-meta {
+        gap: 1.5rem;
+    }
+
+    .lightbox-close {
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+    }
 }
 
 /* ============================================

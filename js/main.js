@@ -304,6 +304,90 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bioStats) statsObserver.observe(bioStats);
 
 
+    // ---- Lightbox / Popup ----
+    const lightbox = document.getElementById('lightbox');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+    const lightboxDescription = document.getElementById('lightboxDescription');
+    const lightboxCategory = document.getElementById('lightboxCategory');
+    const lightboxTools = document.getElementById('lightboxTools');
+    const lightboxYear = document.getElementById('lightboxYear');
+    const lightboxClient = document.getElementById('lightboxClient');
+
+    const categoryLabels = {
+        commercial: 'Commercial Work',
+        marketing: 'Marketing Design',
+        social: 'Social Media',
+        album: 'Album Art',
+        painting: 'Painting'
+    };
+
+    function openLightbox(card) {
+        const title = card.dataset.title;
+        const description = card.dataset.description;
+        const tools = card.dataset.tools;
+        const year = card.dataset.year;
+        const client = card.dataset.client;
+        const category = card.closest('.gallery-item').dataset.category;
+
+        // Clone the placeholder as the lightbox image preview
+        const placeholder = card.querySelector('.gallery-placeholder');
+        const bgStyle = placeholder.style.cssText;
+        lightboxImage.style.cssText = bgStyle;
+        // Ensure it fills the lightbox image area
+        lightboxImage.style.width = '100%';
+        lightboxImage.style.minHeight = '300px';
+        lightboxImage.style.maxHeight = '450px';
+        lightboxImage.style.display = 'flex';
+        lightboxImage.style.alignItems = 'center';
+        lightboxImage.style.justifyContent = 'center';
+        lightboxImage.innerHTML = `<span style="font-family: var(--font-handwritten); font-size: 1.5rem; color: rgba(255,255,255,0.6);">${placeholder.querySelector('span').textContent}</span>`;
+
+        lightboxCategory.textContent = categoryLabels[category] || category;
+        lightboxTitle.textContent = title || 'Untitled';
+        lightboxDescription.innerHTML = description || '';
+        lightboxTools.innerHTML = tools || '—';
+        lightboxYear.textContent = year || '—';
+        lightboxClient.innerHTML = client || '—';
+
+        // Update the label for paintings (show "Size" instead of "Client / Size")
+        const clientLabel = document.querySelector('#metaClient .meta-label');
+        if (category === 'painting') {
+            clientLabel.textContent = 'Size';
+        } else {
+            clientLabel.textContent = 'Client';
+        }
+
+        lightbox.classList.add('active');
+        document.body.classList.add('lightbox-open');
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('active');
+        document.body.classList.remove('lightbox-open');
+    }
+
+    // Attach click to all gallery cards
+    document.querySelectorAll('.gallery-card[data-title]').forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openLightbox(card);
+        });
+    });
+
+    // Close lightbox
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+            closeLightbox();
+        }
+    });
+
+
     // ---- Gallery Card Tilt Effect ----
     document.querySelectorAll('.gallery-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {
