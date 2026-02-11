@@ -11,8 +11,8 @@
 }
 
 :root {
-    --red: #999;
-    --red-dark: #777;
+    --red: #CC2936;
+    --red-dark: #a3212b;
     --charcoal: #2a2a2a;
     --warm-tan: #888;
     --cream: #333;
@@ -24,7 +24,7 @@
     --bg: #181818;
     --bg-alt: #151515;
     --heading: #bbb;
-    --accent: #999;
+    --accent: #CC2936;
     --border: rgba(255,255,255,0.06);
 
     --font-display: 'Bebas Neue', 'Arial Narrow', sans-serif;
@@ -49,20 +49,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* --- Noise Grain Overlay --- */
-body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 9998;
-    pointer-events: none;
-    opacity: 0.35;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-    mix-blend-mode: overlay;
-}
-
 img {
     max-width: 100%;
     display: block;
@@ -79,8 +65,8 @@ a {
     padding: 0 2rem;
 }
 
-/* --- Flip Disc Background Canvas --- */
-#flip-disc-canvas {
+/* --- Flow Field Background Canvas --- */
+#flow-field-canvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -88,17 +74,6 @@ a {
     height: 100%;
     z-index: 0;
     pointer-events: none;
-}
-
-/* --- Paint Cursor Canvas --- */
-#paint-cursor-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 9997;
 }
 
 /* ============================================
@@ -147,7 +122,7 @@ a {
     left: 0;
     width: 100%;
     height: 1px;
-    background: #666;
+    background: #CC2936;
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s var(--ease-out);
@@ -176,7 +151,7 @@ a {
 }
 
 .nav-links a:hover {
-    color: #bbb;
+    color: #CC2936;
 }
 
 .nav-links a::after {
@@ -186,7 +161,7 @@ a {
     left: 0;
     width: 0;
     height: 1px;
-    background: #888;
+    background: #CC2936;
     transition: width 0.3s var(--ease-out);
 }
 
@@ -209,8 +184,8 @@ a {
 
 .nav-cta:hover {
     background: transparent !important;
-    border-color: #888 !important;
-    color: #bbb !important;
+    border-color: #CC2936 !important;
+    color: #CC2936 !important;
 }
 
 /* Mobile nav toggle */
@@ -377,12 +352,12 @@ a {
 
 /* Name hover effects */
 .hero-name-wrapper:hover .stroke-1 {
-    stroke: #555;
+    stroke: #CC2936;
     transition: stroke 0.4s ease;
 }
 
 .hero-name-wrapper:hover .stroke-2 {
-    stroke: #444;
+    stroke: #a3212b;
     transition: stroke 0.4s ease;
 }
 
@@ -416,7 +391,7 @@ a {
 }
 
 .drip-1 {
-    background: #555;
+    background: #CC2936;
     opacity: 0.3;
     animation-delay: 1.5s;
 }
@@ -552,7 +527,7 @@ a {
     left: 0;
     right: 0;
     height: 1px;
-    background: #444;
+    background: #CC2936;
     opacity: 1;
     border-radius: 0;
     z-index: -1;
@@ -608,7 +583,6 @@ a {
     object-fit: cover;
     display: block;
     border-radius: 2px;
-    filter: grayscale(100%) contrast(1.1);
 }
 
 .bio-paint-accent {
@@ -650,7 +624,7 @@ a {
     font-family: var(--font-display);
     font-size: 2.8rem;
     font-weight: 400;
-    color: #999;
+    color: #CC2936;
     letter-spacing: 0.05em;
 }
 
@@ -680,7 +654,7 @@ a {
     font-family: var(--font-display);
     font-size: 1.4rem;
     font-weight: 400;
-    color: #999;
+    color: #CC2936;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-bottom: 1.5rem;
@@ -700,7 +674,7 @@ a {
 }
 
 .resume-item:hover {
-    border-left-color: #555;
+    border-left-color: #CC2936;
 }
 
 .resume-item:last-child {
@@ -786,7 +760,7 @@ a {
     top: 0.7em;
     width: 3px;
     height: 3px;
-    background: #555;
+    background: #CC2936;
     border-radius: 50%;
     opacity: 0.8;
 }
@@ -810,8 +784,8 @@ a {
 }
 
 .resume-tag:hover {
-    border-color: #555;
-    color: #aaa;
+    border-color: #CC2936;
+    color: #CC2936;
 }
 
 .resume-tools-grid {
@@ -832,8 +806,8 @@ a {
 }
 
 .resume-tool:hover {
-    border-color: #444;
-    color: #999;
+    border-color: #CC2936;
+    color: #CC2936;
 }
 
 .resume-achievement {
@@ -841,7 +815,7 @@ a {
 }
 
 .resume-achievement:hover {
-    border-left-color: #555;
+    border-left-color: #CC2936;
 }
 
 .resume-achievement-text {
@@ -851,7 +825,7 @@ a {
 }
 
 .resume-achievement-text em {
-    color: #999;
+    color: #CC2936;
     font-style: italic;
 }
 
@@ -1079,7 +1053,7 @@ a {
 }
 
 .painting-section .title-brush {
-    background: #444;
+    background: #CC2936;
     opacity: 1;
 }
 
@@ -1139,8 +1113,8 @@ a {
 }
 
 .contact-btn.primary:hover {
-    border-color: #888;
-    color: #bbb;
+    border-color: #CC2936;
+    color: #CC2936;
     transform: translateY(-1px);
 }
 
@@ -1167,8 +1141,8 @@ a {
 }
 
 .social-link:hover {
-    border-color: #888;
-    color: #aaa;
+    border-color: #CC2936;
+    color: #CC2936;
     transform: translateY(-1px);
 }
 
@@ -1526,8 +1500,8 @@ body.lightbox-open {
 }
 
 .lightbox-close:hover {
-    border-color: #888;
-    color: #bbb;
+    border-color: #CC2936;
+    color: #CC2936;
     transform: rotate(90deg);
 }
 
@@ -1570,8 +1544,8 @@ body.lightbox-open {
    SELECTION & SCROLLBAR
    ============================================ */
 ::selection {
-    background: #555;
-    color: #ddd;
+    background: #CC2936;
+    color: #fff;
 }
 
 ::-webkit-scrollbar {
@@ -1588,5 +1562,5 @@ body.lightbox-open {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #CC2936;
 }

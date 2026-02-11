@@ -5,299 +5,166 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ============================================
-    // FLIP DISC BACKGROUND (optimized)
+    // FLOW FIELD BACKGROUND
     // ============================================
-    const flipCanvas = document.getElementById('flip-disc-canvas');
-    const flipCtx = flipCanvas.getContext('2d', { alpha: false });
+    const flowCanvas = document.getElementById('flow-field-canvas');
+    const flowCtx = flowCanvas.getContext('2d');
 
-    const DISC_SIZE = 14;
-    const DISC_GAP = 2;
-    const CELL = DISC_SIZE + DISC_GAP;
-    const RADIUS = DISC_SIZE / 2;
-    const FLIP_RADIUS = 120;
-    const FLIP_RADIUS_SQ = FLIP_RADIUS * FLIP_RADIUS; // squared for fast comparison
-    const FLIP_SPEED = 0.18;
-    const RETURN_SPEED = 0.08;
-    const DEAD_ZONE = 0.005;       // below this flip value, snap to 0
-    const PI2 = Math.PI * 2;
-    const BG_COLOR = '#1a1a1a';
-
-    // Pre-rendered disc sprites for each color at full size (avoids arc() per frame)
-    const FRONT_COLOR = '#1c1c1c';
-    const ACCENT_COLORS = ['#333', '#444', '#555'];
-    const SPRITE_SIZE = DISC_SIZE + 2; // 1px padding for anti-alias
-    const spriteCache = {};
-
-    function makeDiscSprite(fillColor, strokeColor) {
-        const key = fillColor + strokeColor;
-        if (spriteCache[key]) return spriteCache[key];
-        const c = document.createElement('canvas');
-        c.width = SPRITE_SIZE;
-        c.height = SPRITE_SIZE;
-        const cx = c.getContext('2d');
-        cx.beginPath();
-        cx.arc(SPRITE_SIZE / 2, SPRITE_SIZE / 2, RADIUS, 0, PI2);
-        cx.fillStyle = fillColor;
-        cx.fill();
-        cx.strokeStyle = strokeColor;
-        cx.lineWidth = 0.5;
-        cx.stroke();
-        spriteCache[key] = c;
-        return c;
-    }
-
-    // Pre-build all sprites
-    const frontSprite = makeDiscSprite(FRONT_COLOR, '#222');
-    const backSprites = ACCENT_COLORS.map(c => makeDiscSprite(c, 'rgba(255,255,255,0.05)'));
-
-    // Use typed arrays for disc state (SoA layout for cache-friendly iteration)
-    let cols, rows, totalDiscs;
-    let discFlip, discTarget, discColorIdx;
-    // Track which discs are currently animating so we can skip static ones
-    let activeSet = new Set();
-    let flipMouseX = -9999;
-    let flipMouseY = -9999;
-    let prevMouseCol = -1;
-    let prevMouseRow = -1;
-
-    function initDiscs() {
-        flipCanvas.width = window.innerWidth;
-        flipCanvas.height = window.innerHeight;
-        cols = Math.ceil(flipCanvas.width / CELL) + 1;
-        rows = Math.ceil(flipCanvas.height / CELL) + 1;
-        totalDiscs = cols * rows;
-
-        discFlip = new Float32Array(totalDiscs);     // current flip 0-1
-        discTarget = new Float32Array(totalDiscs);   // target flip
-        discColorIdx = new Uint8Array(totalDiscs);   // back color index
-
-        for (let i = 0; i < totalDiscs; i++) {
-            discColorIdx[i] = (Math.random() * ACCENT_COLORS.length) | 0;
+    // --- Perlin Noise ---
+    const perm = new Uint8Array(512);
+    const grad2 = [[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+    (function() {
+        const p = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) p[i] = i;
+        for (let i = 255; i > 0; i--) {
+            const j = (Math.random() * (i + 1)) | 0;
+            const t = p[i]; p[i] = p[j]; p[j] = t;
         }
-        activeSet.clear();
+        for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+    })();
 
-        // Draw initial static frame
-        drawStaticBackground();
+    function fade(t) { return t * t * t * (t * (t * 6 - 15) + 10); }
+    function lerpN(a, b, t) { return a + t * (b - a); }
+
+    function noise2D(x, y) {
+        const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+        const xf = x - Math.floor(x), yf = y - Math.floor(y);
+        const u = fade(xf), v = fade(yf);
+        const d = (i, fx, fy) => { const g = grad2[perm[i] & 7]; return g[0] * fx + g[1] * fy; };
+        const aa = perm[X] + Y, ba = perm[X + 1] + Y;
+        return lerpN(
+            lerpN(d(aa, xf, yf), d(ba, xf - 1, yf), u),
+            lerpN(d(aa + 1, xf, yf - 1), d(ba + 1, xf - 1, yf - 1), u),
+            v
+        );
     }
 
-    function drawStaticBackground() {
-        flipCtx.fillStyle = BG_COLOR;
-        flipCtx.fillRect(0, 0, flipCanvas.width, flipCanvas.height);
-        const halfSprite = SPRITE_SIZE / 2;
-        for (let r = 0; r < rows; r++) {
-            const y = r * CELL + RADIUS - halfSprite;
-            for (let c = 0; c < cols; c++) {
-                flipCtx.drawImage(frontSprite, c * CELL + RADIUS - halfSprite, y);
-            }
-        }
+    // Configuration
+    const PARTICLE_COUNT = 600;
+    const NOISE_SCALE = 0.0025;
+    const NOISE_SPEED = 0.0006;
+    const MAX_SPEED = 1.5;
+    const CURSOR_RADIUS = 220;
+
+    // Cherry red + grey pen-stroke palette
+    const FLOW_COLORS = [
+        'rgba(204,41,54,0.12)',
+        'rgba(163,33,43,0.10)',
+        'rgba(230,57,70,0.08)',
+        'rgba(204,41,54,0.06)',
+        'rgba(120,120,120,0.06)',
+        'rgba(90,90,90,0.05)',
+        'rgba(150,150,150,0.04)',
+    ];
+
+    let flowW, flowH, flowTime = 0;
+    let flowMX = -9999, flowMY = -9999;
+    const particles = [];
+
+    function createParticle() {
+        const x = Math.random() * flowW, y = Math.random() * flowH;
+        return {
+            x, y, px: x, py: y, vx: 0, vy: 0,
+            color: FLOW_COLORS[(Math.random() * FLOW_COLORS.length) | 0],
+            lw: 0.3 + Math.random() * 1.2,
+            life: (Math.random() * 280 + 120) | 0,
+            ml: 0
+        };
     }
 
-    initDiscs();
+    function resetParticle(p) {
+        p.x = Math.random() * flowW; p.y = Math.random() * flowH;
+        p.px = p.x; p.py = p.y; p.vx = 0; p.vy = 0;
+        p.life = (Math.random() * 280 + 120) | 0; p.ml = p.life;
+        p.color = FLOW_COLORS[(Math.random() * FLOW_COLORS.length) | 0];
+        p.lw = 0.3 + Math.random() * 1.2;
+    }
 
-    let resizeTimer;
+    function initFlow() {
+        flowCanvas.width = window.innerWidth;
+        flowCanvas.height = window.innerHeight;
+        flowW = flowCanvas.width; flowH = flowCanvas.height;
+        flowCtx.fillStyle = '#181818';
+        flowCtx.fillRect(0, 0, flowW, flowH);
+        particles.length = 0;
+        for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(createParticle());
+    }
+
+    initFlow();
+
+    let flowResizeT;
     window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initDiscs, 100);
+        clearTimeout(flowResizeT);
+        flowResizeT = setTimeout(initFlow, 150);
     });
 
-    document.addEventListener('mousemove', (e) => {
-        flipMouseX = e.clientX;
-        flipMouseY = e.clientY;
-    });
-    document.addEventListener('mouseleave', () => {
-        flipMouseX = -9999;
-        flipMouseY = -9999;
-    });
+    document.addEventListener('mousemove', (e) => { flowMX = e.clientX; flowMY = e.clientY; });
+    document.addEventListener('mouseleave', () => { flowMX = -9999; flowMY = -9999; });
 
-    function updateDiscTargets() {
-        // Only check discs in the grid region near the mouse
-        const mcol = ((flipMouseX - RADIUS) / CELL) | 0;
-        const mrow = ((flipMouseY - RADIUS) / CELL) | 0;
-        const span = Math.ceil(FLIP_RADIUS / CELL) + 1;
+    function tickFlow() {
+        // Subtle fade for trailing pen strokes
+        flowCtx.fillStyle = 'rgba(24,24,24,0.02)';
+        flowCtx.fillRect(0, 0, flowW, flowH);
+        flowTime += NOISE_SPEED;
 
-        const rMin = Math.max(0, mrow - span);
-        const rMax = Math.min(rows - 1, mrow + span);
-        const cMin = Math.max(0, mcol - span);
-        const cMax = Math.min(cols - 1, mcol + span);
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            if (!p.ml) p.ml = p.life;
+            p.px = p.x; p.py = p.y;
 
-        // Also clear targets for previous mouse region if it moved
-        if (prevMouseCol !== mcol || prevMouseRow !== mrow) {
-            const prMin = Math.max(0, prevMouseRow - span);
-            const prMax = Math.min(rows - 1, prevMouseRow + span);
-            const pcMin = Math.max(0, prevMouseCol - span);
-            const pcMax = Math.min(cols - 1, prevMouseCol + span);
-            for (let r = prMin; r <= prMax; r++) {
-                const rowOff = r * cols;
-                for (let c = pcMin; c <= pcMax; c++) {
-                    const idx = rowOff + c;
-                    discTarget[idx] = 0;
-                    if (discFlip[idx] > DEAD_ZONE) activeSet.add(idx);
-                }
+            // Two-octave noise angle
+            const n1 = noise2D(p.x * NOISE_SCALE, p.y * NOISE_SCALE + flowTime);
+            const n2 = noise2D(p.x * NOISE_SCALE + 31.7, p.y * NOISE_SCALE + flowTime + 17.3);
+            let angle = (n1 + n2 * 0.5) * Math.PI * 2.5;
+
+            // Cursor swirl influence
+            const dx = p.x - flowMX, dy = p.y - flowMY;
+            const dSq = dx * dx + dy * dy;
+            if (dSq < CURSOR_RADIUS * CURSOR_RADIUS) {
+                const dist = Math.sqrt(dSq);
+                const t = 1 - dist / CURSOR_RADIUS;
+                angle = lerpN(angle, Math.atan2(dy, dx) + Math.PI * 0.55, t * 0.7);
+                p.vx -= dx * 0.00004 * t;
+                p.vy -= dy * 0.00004 * t;
             }
-            prevMouseCol = mcol;
-            prevMouseRow = mrow;
+
+            p.vx += Math.cos(angle) * 0.15;
+            p.vy += Math.sin(angle) * 0.15;
+
+            // Speed cap + damping
+            const spd = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+            if (spd > MAX_SPEED) { p.vx = p.vx / spd * MAX_SPEED; p.vy = p.vy / spd * MAX_SPEED; }
+            p.vx *= 0.97; p.vy *= 0.97;
+
+            p.x += p.vx; p.y += p.vy;
+            p.life--;
+
+            if (p.life <= 0 || p.x < -20 || p.x > flowW + 20 || p.y < -20 || p.y > flowH + 20) {
+                resetParticle(p);
+                continue;
+            }
+
+            // Draw pen stroke — thin line from previous to current position
+            const lr = p.life / p.ml;
+            flowCtx.globalAlpha = Math.sin(lr * Math.PI);
+            flowCtx.beginPath();
+            flowCtx.moveTo(p.px, p.py);
+            flowCtx.lineTo(p.x, p.y);
+            flowCtx.strokeStyle = p.color;
+            flowCtx.lineWidth = p.lw * (0.3 + lr * 0.7);
+            flowCtx.lineCap = 'round';
+            flowCtx.stroke();
         }
 
-        // Set targets for discs near mouse
-        for (let r = rMin; r <= rMax; r++) {
-            const dy = r * CELL + RADIUS - flipMouseY;
-            const dy2 = dy * dy;
-            const rowOff = r * cols;
-            for (let c = cMin; c <= cMax; c++) {
-                const dx = c * CELL + RADIUS - flipMouseX;
-                const distSq = dx * dx + dy2;
-                const idx = rowOff + c;
-                if (distSq < FLIP_RADIUS_SQ) {
-                    const t = 1 - Math.sqrt(distSq) / FLIP_RADIUS;
-                    discTarget[idx] = t;
-                    activeSet.add(idx);
-                } else {
-                    discTarget[idx] = 0;
-                }
-            }
-        }
+        flowCtx.globalAlpha = 1;
+        requestAnimationFrame(tickFlow);
     }
 
-    function drawDiscs() {
-        updateDiscTargets();
-
-        const halfSprite = SPRITE_SIZE / 2;
-
-        // Process only active (animating) discs
-        activeSet.forEach(idx => {
-            let f = discFlip[idx];
-            const t = discTarget[idx];
-
-            // Animate
-            if (f < t) {
-                f += (t - f) * FLIP_SPEED + 0.02;
-                if (f > t) f = t;
-            } else if (f > t) {
-                f -= (f - t) * RETURN_SPEED + 0.008;
-                if (f < DEAD_ZONE) { f = 0; }
-            }
-            discFlip[idx] = f;
-
-            // If static, remove from active set and redraw as front disc
-            if (f === 0 && t === 0) {
-                activeSet.delete(idx);
-            }
-
-            // Compute grid position
-            const col = idx % cols;
-            const row = (idx / cols) | 0;
-            const cx = col * CELL + RADIUS;
-            const cy = row * CELL + RADIUS;
-
-            // Erase this disc's cell
-            flipCtx.fillStyle = BG_COLOR;
-            flipCtx.fillRect(cx - halfSprite, cy - halfSprite, SPRITE_SIZE, SPRITE_SIZE);
-
-            if (f === 0) {
-                // Static front disc
-                flipCtx.drawImage(frontSprite, cx - halfSprite, cy - halfSprite);
-                return;
-            }
-
-            // Flip animation: scaleX
-            let scaleX, isFront;
-            if (f <= 0.5) {
-                scaleX = 1 - f * 2;
-                isFront = true;
-            } else {
-                scaleX = (f - 0.5) * 2;
-                isFront = false;
-            }
-            if (scaleX < 0.05) scaleX = 0.05;
-
-            const sprite = isFront ? frontSprite : backSprites[discColorIdx[idx]];
-
-            flipCtx.save();
-            flipCtx.translate(cx, cy);
-            flipCtx.scale(scaleX, 1);
-            flipCtx.drawImage(sprite, -halfSprite, -halfSprite);
-            flipCtx.restore();
-        });
-
-        requestAnimationFrame(drawDiscs);
-    }
-    requestAnimationFrame(drawDiscs);
+    requestAnimationFrame(tickFlow);
 
 
-    // ---- Paint Cursor Trail (optimized) ----
-    const canvas = document.getElementById('paint-cursor-canvas');
-    const ctx = canvas.getContext('2d');
-    const heroEl = document.getElementById('hero');
-
-    // Object pool to avoid GC churn
-    const MAX_PARTICLES = 150;
-    const pool = new Array(MAX_PARTICLES);
-    let poolCount = 0;
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const paintColors = ['#444', '#555', '#333'];
-
-    function spawnParticle(x, y) {
-        if (poolCount >= MAX_PARTICLES) return;
-        const p = pool[poolCount] || (pool[poolCount] = {});
-        p.x = x + (Math.random() - 0.5) * 10;
-        p.y = y + (Math.random() - 0.5) * 10;
-        p.size = Math.random() * 6 + 2;
-        p.color = paintColors[(Math.random() * paintColors.length) | 0];
-        p.alpha = Math.random() * 0.4 + 0.2;
-        p.life = 1;
-        p.decay = Math.random() * 0.025 + 0.01;
-        p.vx = (Math.random() - 0.5);
-        p.vy = (Math.random() - 0.5) + 0.5;
-        p.sx = p.size;
-        p.sy = p.size * 0.6;
-        poolCount++;
-    }
-
-    document.addEventListener('mousemove', (e) => {
-        const rect = heroEl.getBoundingClientRect();
-        if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-            spawnParticle(e.clientX, e.clientY);
-        }
-    });
-
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        let writeIdx = 0;
-        for (let i = 0; i < poolCount; i++) {
-            const p = pool[i];
-            p.life -= p.decay;
-            if (p.life <= 0) continue;
-
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.02;
-            p.sx *= 0.99;
-            p.sy *= 0.99;
-
-            ctx.globalAlpha = p.alpha * p.life;
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.ellipse(p.x, p.y, p.sx, p.sy, 0, 0, PI2);
-            ctx.fill();
-
-            // Compact alive particles down
-            if (writeIdx !== i) pool[writeIdx] = p;
-            writeIdx++;
-        }
-        poolCount = writeIdx;
-        ctx.globalAlpha = 1;
-
-        requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
+    // Cherry red palette for SVG splatters
+    const paintColors = ['#CC2936', '#a3212b', '#e63946'];
 
 
     // ---- Interactive Name SVG ----
@@ -463,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 navLinkElements.forEach(link => {
                     link.style.color = '';
                     if (link.getAttribute('href') === `#${id}`) {
-                        link.style.color = '#fff';
+                        link.style.color = '#CC2936';
                     }
                 });
             }
