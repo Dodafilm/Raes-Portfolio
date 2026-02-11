@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where:*)",
+      "Bash(python:*)",
+      "Bash(python -c:*)",
+      "Bash(pip install:*)",
+      "Bash(if not exist \"C:\\\\TD_Applications\\\\Raes-Portfolio\\\\images\" mkdir \"C:\\\\TD_Applications\\\\Raes-Portfolio\\\\images\")"
+    ]
+  }
+}

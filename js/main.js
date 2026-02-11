@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.15 });
 
     // Add reveal class to section headers and bio elements
-    document.querySelectorAll('.section-header, .bio-grid, .contact-inner').forEach(el => {
+    document.querySelectorAll('.section-header, .bio-grid, .contact-inner, .resume-grid').forEach(el => {
         el.classList.add('reveal');
         sectionObserver.observe(el);
     });
@@ -534,16 +534,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clone the placeholder as the lightbox image preview
         const placeholder = card.querySelector('.gallery-placeholder');
-        const bgStyle = placeholder.style.cssText;
-        lightboxImage.style.cssText = bgStyle;
-        // Ensure it fills the lightbox image area
+        const placeholderImg = placeholder.querySelector('img');
+        lightboxImage.style.cssText = '';
         lightboxImage.style.width = '100%';
         lightboxImage.style.minHeight = '300px';
         lightboxImage.style.maxHeight = '450px';
         lightboxImage.style.display = 'flex';
         lightboxImage.style.alignItems = 'center';
         lightboxImage.style.justifyContent = 'center';
-        lightboxImage.innerHTML = `<span style="font-family: var(--font-handwritten); font-size: 1.5rem; color: rgba(255,255,255,0.6);">${placeholder.querySelector('span').textContent}</span>`;
+        lightboxImage.style.overflow = 'hidden';
+
+        if (placeholderImg) {
+            lightboxImage.style.background = '#111';
+            lightboxImage.innerHTML = `<img src="${placeholderImg.src}" alt="${placeholderImg.alt || ''}" style="width:100%;height:100%;object-fit:contain;">`;
+        } else {
+            const bgStyle = placeholder.style.cssText;
+            lightboxImage.style.cssText += bgStyle;
+            lightboxImage.style.width = '100%';
+            lightboxImage.style.minHeight = '300px';
+            lightboxImage.style.maxHeight = '450px';
+            lightboxImage.style.display = 'flex';
+            lightboxImage.style.alignItems = 'center';
+            lightboxImage.style.justifyContent = 'center';
+            const spanEl = placeholder.querySelector('span');
+            lightboxImage.innerHTML = spanEl ? `<span style="font-family: var(--font-handwritten); font-size: 1.5rem; color: rgba(255,255,255,0.6);">${spanEl.textContent}</span>` : '';
+        }
 
         lightboxCategory.textContent = categoryLabels[category] || category;
         lightboxTitle.textContent = title || 'Untitled';
