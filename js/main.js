@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const BG_COLOR = '#1a1a1a';
 
     // Pre-rendered disc sprites for each color at full size (avoids arc() per frame)
-    const FRONT_COLOR = '#1e1e1e';
-    const ACCENT_COLORS = ['#E8453C', '#D4A574', '#ffffff'];
+    const FRONT_COLOR = '#1c1c1c';
+    const ACCENT_COLORS = ['#333', '#444', '#555'];
     const SPRITE_SIZE = DISC_SIZE + 2; // 1px padding for anti-alias
     const spriteCache = {};
 
@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Pre-build all sprites
-    const frontSprite = makeDiscSprite(FRONT_COLOR, '#2a2a2a');
-    const backSprites = ACCENT_COLORS.map(c => makeDiscSprite(c, 'rgba(255,255,255,0.15)'));
+    const frontSprite = makeDiscSprite(FRONT_COLOR, '#222');
+    const backSprites = ACCENT_COLORS.map(c => makeDiscSprite(c, 'rgba(255,255,255,0.05)'));
 
     // Use typed arrays for disc state (SoA layout for cache-friendly iteration)
     let cols, rows, totalDiscs;
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    const paintColors = ['#E8453C', '#D4A574', '#2D2D2D'];
+    const paintColors = ['#444', '#555', '#333'];
 
     function spawnParticle(x, y) {
         if (poolCount >= MAX_PARTICLES) return;
