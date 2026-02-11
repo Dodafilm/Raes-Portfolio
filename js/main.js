@@ -46,15 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_SPEED = 1.5;
     const CURSOR_RADIUS = 220;
 
-    // Cherry red + grey pen-stroke palette
+    // White pen-stroke palette
     const FLOW_COLORS = [
-        'rgba(204,41,54,0.12)',
-        'rgba(163,33,43,0.10)',
-        'rgba(230,57,70,0.08)',
-        'rgba(204,41,54,0.06)',
-        'rgba(120,120,120,0.06)',
-        'rgba(90,90,90,0.05)',
-        'rgba(150,150,150,0.04)',
+        'rgba(255,255,255,0.18)',
+        'rgba(255,255,255,0.14)',
+        'rgba(255,255,255,0.10)',
+        'rgba(240,240,240,0.12)',
+        'rgba(220,220,220,0.08)',
     ];
 
     let flowW, flowH, flowTime = 0;
